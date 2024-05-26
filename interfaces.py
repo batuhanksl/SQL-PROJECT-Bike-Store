@@ -627,11 +627,18 @@ def MainStaffPage(staff_info = list):
     store_name.place(x=200,y=20)
 
     def exit():
-        frame.destroy()
+        root.destroy()
         LoginPage()
+
+    def reflesh_page():
+        root.destroy()
+        MainStaffPage(staff_info)
 
     exit_button = customtkinter.CTkButton(master=frame,width=20,height=20,text="<",command=exit)
     exit_button.place(x=10,y=10)
+
+    reflesh_button = customtkinter.CTkButton(master=frame,width=20,height=20,text="⟳",command=reflesh_page)
+    reflesh_button.place(x=830,y=10)
 
     def SearchDataCommand():
         search_data_page(search_combobox.get())
