@@ -4,7 +4,6 @@ from tkinter import messagebox
 from PIL import Image
 from tkinter import ttk
 import matplotlib.pyplot as plt
-import numpy as np
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 
@@ -523,6 +522,49 @@ def accept_orders_page(staff_info = list):
 
     accept_orders.mainloop()
 
+def previous_customer_orders(customer_info = list):
+    previous_orders_table = sqldatacommands.previous_orders_fill(customer_info[0])
+
+    search_data = customtkinter.CTk()
+    search_data.iconbitmap("estulogo.ico")
+    search_data.geometry("600x500")
+    
+
+    search_data_main_frame = customtkinter.CTkFrame(master=search_data)
+    search_data_main_frame.pack(pady=10,padx=10, fill="both", expand=True)
+
+    customer_name = customtkinter.CTkLabel(master=search_data_main_frame, text=(customer_info[1] + "'s Basket"), font=("Roboto",20))
+    customer_name.place(x=20,y=10)
+
+    search_data_frame = customtkinter.CTkFrame(master=search_data_main_frame,width=550,height=500)
+    search_data_frame.place(x=20,y=40)
+
+    
+    search_data_tree = ttk.Treeview(master=search_data_frame,height=25)
+    search_data_tree["columns"] = ("Order ID","Product Name","Quantity","Order Status")
+
+    search_data_tree.column("#0",width=1)
+    search_data_tree.column("Order ID",width=130,anchor="center")
+    search_data_tree.column("Product Name",width=190,anchor="center")
+    search_data_tree.column("Quantity",width=160,anchor="center")
+    search_data_tree.column("Order Status",width=160,anchor="center")
+
+    search_data_tree.heading("#0",text="")
+    search_data_tree.heading("Order ID",text="Order ID")
+    search_data_tree.heading("Product Name",text="Product Name")
+    search_data_tree.heading("Quantity",text="Quantity")
+    search_data_tree.heading("Order Status",text="Order Status")
+        
+
+    count = 0
+    for i in previous_orders_table:
+        search_data_tree.insert(parent="",index="end",iid=count,text="",values=(i[0],i[1],i[2],i[3]))
+        count += 1
+
+    search_data_tree.place(x=10,y=10)
+
+    search_data.mainloop()
+
 #Main Pages
 def MainCustomerPage(customer_info = list):
     root = customtkinter.CTk()
@@ -531,8 +573,8 @@ def MainCustomerPage(customer_info = list):
 
 
     #Main Frame
-    frame = customtkinter.CTkFrame(master=root)
-    frame.pack(pady=10,padx=10, fill = "both", expand = True)
+    frame = customtkinter.CTkFrame(master=root,width=880,height=480)
+    frame.place(x=10,y=10)
 
     store_name = customtkinter.CTkLabel(master=frame, text="IKI EYLUL BIKE INTERFACE", font=("Roboto",40))
     store_name.place(x=200,y=20)
@@ -543,6 +585,12 @@ def MainCustomerPage(customer_info = list):
 
     exit_button = customtkinter.CTkButton(master=frame,width=20,height=20,text="<",command=exit)
     exit_button.place(x=10,y=10)
+
+    def PreviousOrders():
+        previous_customer_orders(customer_info)
+
+    previous_orders_button = customtkinter.CTkButton(master=frame,width=100,height=20,text="Previous Orders",command=PreviousOrders)
+    previous_orders_button.place(x=760,y=10)
 
     #Left Frame
     frame2 = customtkinter.CTkFrame(master=frame,height=350,width=550)
