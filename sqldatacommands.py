@@ -294,7 +294,6 @@ def product_table():
     conn.close()
     return selection
 
-
 def pending_orders_table():
     conn = sqlite3.connect("data.db")
     cursor = conn.cursor()
@@ -371,6 +370,18 @@ def stocks_table_fill():
     conn = sqlite3.connect("data.db")
     cursor = conn.cursor()
     cursor.execute("SELECT products.product_id ,products.product_name, products.model_year, products.price, stocks.quantity FROM products INNER JOIN stocks ON products.product_id = stocks.product_id")
+    selection = cursor.fetchall()
+    conn.close()
+    return selection
+
+def previous_orders_fill(customer_id = int):
+    conn = sqlite3.connect("data.db")
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT customer_id FROM customer WHERE id_number = (?)",(str(customer_id),))
+    customer = cursor.fetchall()[0][0]
+
+    cursor.execute("SELECT orders.order_id, products.product_name, orders.quantity, orders.order_status FROM orders INNER JOIN products ON orders.product_id = products.product_id WHERE customer_id = (?) ORDER BY orders.order_id DESC",(str(customer),))
     selection = cursor.fetchall()
     conn.close()
     return selection
