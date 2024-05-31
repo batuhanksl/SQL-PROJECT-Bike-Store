@@ -8,8 +8,8 @@ def add_to_staffs_table(id_number = int,password = str,first_name = str,last_nam
     conn = sqlite3.connect("data.db")
 
     data_insert_query = '''INSERT INTO staffs
-    (id_number,first_name,last_name,phone,manager_id) VALUES (?,?,?,?,?)
-    '''
+                        (id_number,first_name,last_name,phone,manager_id) VALUES (?,?,?,?,?)
+                        '''
     data_insert_tuple = (id_number,first_name,last_name,phone,manager_id)
 
     cursor = conn.cursor()
@@ -32,13 +32,11 @@ def add_to_product_table(product_name = str,brand_id = int,category_id = int,mod
     conn = sqlite3.connect("data.db")
 
     data_insert_query = '''INSERT INTO products
-    (product_name,brand_id,category_id,model_year,price) VALUES (?,?,?,?,?)
-    '''
+                        (product_name,brand_id,category_id,model_year,price) VALUES (?,?,?,?,?)
+                        '''
     data_insert_tuple = (product_name,brand_id,category_id,model_year,price)
 
-    data_insert_query2 = '''INSERT INTO stocks
-    (quantity) VALUES (?)
-    '''
+    data_insert_query2 = '''INSERT INTO stocks (quantity) VALUES (?)'''
     cursor = conn.cursor()
     cursor.execute(data_insert_query,data_insert_tuple)
     cursor.execute(data_insert_query2,(quantity,))
@@ -337,7 +335,9 @@ def pending_orders_counter():
 def sold_product_counter():
     conn = sqlite3.connect("data.db")
     cursor = conn.cursor()
-    cursor.execute("SELECT products.product_name, count(orders.product_id) FROM orders INNER JOIN products ON orders.product_id = products.product_id GROUP BY orders.product_id")
+    cursor.execute('''SELECT products.product_name, sum(orders.quantity) FROM orders 
+                   INNER JOIN products ON orders.product_id = products.product_id
+                   GROUP BY orders.product_id''')
     selection = cursor.fetchall()
     return selection
 
@@ -346,14 +346,20 @@ def customer_who_order():
     cursor = conn.cursor()
     cursor.execute("SELECT customer_id FROM orders GROUP BY customer_id")
     ordered = cursor.fetchall()
-    cursor.execute("SELECT customer_id FROM customer EXCEPT SELECT customer_id FROM orders GROUP BY customer_id")
+    cursor.execute('''SELECT customer_id FROM customer 
+                    EXCEPT 
+                    SELECT DISTINCT customer_id FROM orders''')
     not_ordered = cursor.fetchall()
     return [["Ordered Before",ordered.__len__()],["Not Ordered Before",not_ordered.__len__()]]
 
 def orders_table_fill():
     conn = sqlite3.connect("data.db")
     cursor = conn.cursor()
-    cursor.execute("SELECT orders.order_id, customer.first_name, customer.last_name ,products.product_name, orders.quantity, orders.order_status, orders.staff_id FROM orders INNER JOIN products ON orders.product_id = products.product_id INNER JOIN customer ON orders.customer_id = customer.customer_id ORDER BY orders.order_id DESC")
+    cursor.execute('''SELECT orders.order_id, customer.first_name, customer.last_name ,products.product_name, 
+                   orders.quantity, orders.order_status, orders.staff_id FROM orders 
+                   INNER JOIN products ON orders.product_id = products.product_id 
+                   INNER JOIN customer ON orders.customer_id = customer.customer_id 
+                   ORDER BY orders.order_id DESC''')
     selection = cursor.fetchall()
     conn.close()
     return selection
@@ -369,7 +375,9 @@ def customers_table_fill():
 def stocks_table_fill():
     conn = sqlite3.connect("data.db")
     cursor = conn.cursor()
-    cursor.execute("SELECT products.product_id ,products.product_name, products.model_year, products.price, stocks.quantity FROM products INNER JOIN stocks ON products.product_id = stocks.product_id")
+    cursor.execute('''SELECT products.product_id ,products.product_name, products.model_year, 
+                   products.price, stocks.quantity FROM products 
+                   INNER JOIN stocks ON products.product_id = stocks.product_id''')
     selection = cursor.fetchall()
     conn.close()
     return selection
@@ -381,7 +389,10 @@ def previous_orders_fill(customer_id = int):
     cursor.execute("SELECT customer_id FROM customer WHERE id_number = (?)",(str(customer_id),))
     customer = cursor.fetchall()[0][0]
 
-    cursor.execute("SELECT orders.order_id, products.product_name, orders.quantity, orders.order_status FROM orders INNER JOIN products ON orders.product_id = products.product_id WHERE customer_id = (?) ORDER BY orders.order_id DESC",(str(customer),))
+    cursor.execute('''SELECT orders.order_id, products.product_name, orders.quantity, orders.order_status FROM orders 
+                   INNER JOIN products ON orders.product_id = products.product_id 
+                   WHERE customer_id = (?) 
+                   ORDER BY orders.order_id DESC''',(str(customer),))
     selection = cursor.fetchall()
     conn.close()
     return selection
