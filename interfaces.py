@@ -466,17 +466,29 @@ def accept_orders_page(staff_info = list):
 
     staff_id = int(sqldatacommands.find_employer_id(staff_info[1]))
 
+    order_number_name = customtkinter.CTkLabel(master=accept_orders_action_frame, text="Order Number", font=("Roboto",15))
+    order_number_name.place(x=10,y=40)
+
     product_order_number = customtkinter.CTkEntry(master=accept_orders_action_frame,placeholder_text="Order Number",state="disabled",width=170)
-    product_order_number.place(x=10,y=40)
+    product_order_number.place(x=10,y=70)
+
+    product_id_name = customtkinter.CTkLabel(master=accept_orders_action_frame, text="Product ID", font=("Roboto",15))
+    product_id_name.place(x=10,y=110)
 
     product_id = customtkinter.CTkEntry(master=accept_orders_action_frame,placeholder_text="Product ID",state="disabled",width=170)
-    product_id.place(x=10,y=70)
+    product_id.place(x=10,y=140)
+
+    quantity_name = customtkinter.CTkLabel(master=accept_orders_action_frame, text="Quantity", font=("Roboto",15))
+    quantity_name.place(x=10,y=180)
 
     product_quantity = customtkinter.CTkEntry(master=accept_orders_action_frame,placeholder_text="Order Quantity",state="disabled",width=170)
-    product_quantity.place(x=10,y=100)
+    product_quantity.place(x=10,y=210)
 
+    stock_quantity_name = customtkinter.CTkLabel(master=accept_orders_action_frame, text="In Stock Quantity", font=("Roboto",15))
+    stock_quantity_name.place(x=10,y=250)
+    
     product_stock_quantity = customtkinter.CTkEntry(master=accept_orders_action_frame,placeholder_text="Stock Quantity",state="disabled",width=170)
-    product_stock_quantity.place(x=10,y=130)
+    product_stock_quantity.place(x=10,y=280)
 
     def Select_Order():
         value = accept_orders_tree.item(accept_orders_tree.selection()[0])["values"] 
@@ -512,10 +524,10 @@ def accept_orders_page(staff_info = list):
             messagebox.showinfo("Ooops!","Please select an order first!")
 
     select_order_button = customtkinter.CTkButton(master=accept_orders_action_frame,command=Select_Order , text="SELECT",width=170)
-    select_order_button.place(x=10,y=160)
+    select_order_button.place(x=10,y=330)
 
     select_order_button = customtkinter.CTkButton(master=accept_orders_action_frame,command=Complete_Order , text="COMPLETE ORDER",width=170)
-    select_order_button.place(x=10,y=190)
+    select_order_button.place(x=10,y=360)
 
 
 
